@@ -22,6 +22,11 @@ public class Server {
                 id++;
                 ConnectedClient conClient = new ConnectedClient(Clientsocket,id);
                 conClient.readMessage();
+                try {
+                    conClient.sendBack();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 conClient.close();
             }).start();
         }

@@ -1,28 +1,39 @@
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 
 public class Client {
-    private Scanner in;
+    private Scanner s;
     private OutputStream outStream;
     private ObjectOutputStream out;
+    private InputStream inStream;
+    private ObjectInputStream in;
+
     private int mess_id  = 0;
     private Socket socket;
-    private Scanner s;
 
     public Client(){
         try{
             InetAddress addr = InetAddress.getByName("localhost");
             this.socket = new Socket(addr, 4040);
-            this.in = new Scanner(System.in);
+            this.s = new Scanner(System.in);
             this.outStream = socket.getOutputStream();
             this.out = new ObjectOutputStream(outStream);
-            sendMessage();
+            this.inStream = socket.getInputStream();
+            this.in = new ObjectInputStream(inStream);
+            int pon = 1;
+            while(true){
+                if(pon ==1){
+                    sendMessage();
+                    pon = 0;
+                }
+                else if (pon == 0) {
+                    receiveMessage();
+                    pon = 1;
+                }
+            }
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -33,21 +44,33 @@ public class Client {
         this.mess_id+=1;
     }
     public void sendMessage() throws IOException {
-        String line = "";
-        System.out.println("Wprowadz operacje: {Typ, liczba a, liczba b, akcja do wykonania{+,-,*,/}");
-        while(!line.equals("#")){
-
-            String type = in.nextLine();
-            float a = in.nextFloat();
-            float b = in.nextFloat();
-            String action = in.nextLine();
-            Message mess = new Message(type,mess_id,a,b,action);
+            System.out.println("Wprowadz operacje: {Typ, liczba a, liczba b, akcja do wykonania{+,-,*,/}");
+            String type = s.nextLine();
+            String action = s.nextLine();
+            float a = s.nextFloat();
+            float b = s.nextFloat();
+            Message mess = new Message(type,mess_id,a,b,action,0);
             incID();
             out.writeObject(mess);
-            out.flush();
-        }
-        close();
+            //out.flush();
     }
+
+    public boolean receiveMessage(){
+            Message ans;
+            try{
+                ans = (Message) this.in.readObject();
+                System.out.println("Otrzymano opdowiedz\n");
+                if(ans != null){
+                    System.out.println(ans.getAnswer());
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            return true;
+    }
+
     public void close() throws IOException {
         in.close();
         out.close();

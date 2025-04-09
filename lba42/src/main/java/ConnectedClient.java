@@ -5,6 +5,10 @@ public class ConnectedClient {
     private Socket clientsocket;
     private InputStream inStream;
     private ObjectInputStream in;
+
+    private OutputStream outStream;
+
+    private ObjectOutputStream out;
     private int id;
     private int mess_id = 0;
 
@@ -15,11 +19,12 @@ public class ConnectedClient {
             System.out.println("Client: " + this.id + " has been connected!");
             this.inStream = clientsocket.getInputStream();
             this.in = new ObjectInputStream(inStream);
+            this.outStream = clientsocket.getOutputStream();
+            this.out = new ObjectOutputStream(outStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
     public void readMessage(){
         String line = "";
         while(!(line.equals("#"))){
@@ -36,6 +41,27 @@ public class ConnectedClient {
             }
         }
         System.out.println("Client: " + this.id + " has been connected!");
+        close();
+    }
+    private float calculate(Message mes) {
+        if (mes.getAction().equals("+")) {
+            return mes.getA() + mes.getB();
+        } else if (mes.getAction().equals("-")) {
+            return mes.getA() - mes.getB();
+        } else if (mes.getAction().equals("*")) {
+            return mes.getA() * mes.getB();
+        } else if (mes.getAction().equals("/")) {
+            return mes.getA() / mes.getB();
+        }
+        return -1;
+    }
+
+    public void sendBack() throws IOException {
+        Message mess = new Message("",0,0,0,"",0);
+        mess.setAns(calculate(mess));
+        System.out.println("Calculated operation: " + mess.getAnswer());
+        out.writeObject(mess);
+        out.flush();
         close();
     }
 
