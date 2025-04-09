@@ -13,6 +13,7 @@ public class Client {
     private ObjectOutputStream out;
     private int mess_id  = 0;
     private Socket socket;
+    private Scanner s;
 
     public Client(){
         try{
@@ -35,13 +36,15 @@ public class Client {
         String line = "";
         System.out.println("Wprowadz operacje: {Typ, liczba a, liczba b, akcja do wykonania{+,-,*,/}");
         while(!line.equals("#")){
-            char type = '.';
-            float a = 0;
-            float b = 0;
-            char action = '+';
+
+            String type = in.nextLine();
+            float a = in.nextFloat();
+            float b = in.nextFloat();
+            String action = in.nextLine();
             Message mess = new Message(type,mess_id,a,b,action);
             incID();
             out.writeObject(mess);
+            out.flush();
         }
         close();
     }

@@ -23,9 +23,12 @@ public class ConnectedClient {
     public void readMessage(){
         String line = "";
         while(!(line.equals("#"))){
+            Message mess;
             try{
-                Message mess = (Message) this.in.readObject();
-                System.out.println(toString(mess));
+                mess = (Message) this.in.readObject();
+                if(mess != null){
+                    System.out.println(toString(mess));
+                }
             }catch(IOException e){
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -46,6 +49,6 @@ public class ConnectedClient {
     }
 
     public String toString(Message mess) {
-        return "Message: type: {"+mess.getType() +" ID: "+ mess.getId()+" a= " + mess.getA() + "b = " + mess.getB() + "action - " + mess.getAction();
+        return "Message\n: type: "+mess.getType() +" \nID: "+ mess.getId()+" \na= " + mess.getA() + "\nb = " + mess.getB() + "\naction - " + mess.getAction();
     }
 }

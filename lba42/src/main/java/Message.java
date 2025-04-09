@@ -1,13 +1,13 @@
 import java.io.Serializable;
 
 public class Message implements Serializable {
-    private final char type;
+    private final String type;
     private final int id;
     private final float a;
     private final float b;
-    private final char action;
+    private final String action;
 
-    public Message(char type, int id, float a, float b, char action){
+    public Message(String type, int id, float a, float b, String action){
         this.type = type;
         this.id = id;
         this.a = a;
@@ -15,7 +15,7 @@ public class Message implements Serializable {
         this.action = action;
     }
 
-    public char getType() {
+    public String getType() {
         return type;
     }
 
@@ -31,7 +31,7 @@ public class Message implements Serializable {
         return b;
     }
 
-    public char getAction() {
+    public String getAction() {
         return action;
     }
 }
